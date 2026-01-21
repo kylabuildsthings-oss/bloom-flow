@@ -115,7 +115,7 @@ export function StyledMedicalDisclaimer({
                       Emergency Situations
                     </h3>
                     <p className="text-amber-800 leading-relaxed">
-                      If you are experiencing a medical emergency, call <strong>911</strong> or go to the nearest emergency room immediately.
+                      If you are experiencing a medical emergency, call <strong>999</strong> or go to the nearest emergency room immediately.
                     </p>
                   </motion.div>
 

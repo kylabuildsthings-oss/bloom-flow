@@ -148,7 +148,7 @@ export function getEmergencyResources(severity: SymptomSeverity): {
   const baseResources = [
     {
       name: 'Emergency Services',
-      contact: '911',
+      contact: '999',
       description: 'Call for life-threatening emergencies',
     },
     {

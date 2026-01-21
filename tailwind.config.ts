@@ -74,6 +74,20 @@ const config: Config = {
           800: '#262626',
           900: '#171717',
         },
+        // Terracotta for active tab indicator
+        terracotta: {
+          DEFAULT: '#CD853F',
+          50: '#faf7f2',
+          100: '#f5ede0',
+          200: '#ead9c1',
+          300: '#dcc09a',
+          400: '#CD853F',
+          500: '#b87333',
+          600: '#9d5f28',
+          700: '#7d4a20',
+          800: '#653c1a',
+          900: '#523115',
+        },
       },
       borderRadius: {
         DEFAULT: '0.5rem', // rounded-lg as default

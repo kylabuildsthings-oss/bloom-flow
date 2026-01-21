@@ -5,6 +5,7 @@ import { MedicalDisclaimerProvider } from "@/components/MedicalDisclaimer";
 import { OpikProvider } from "@/lib/opik";
 import { SoundToggle } from "@/components/SoundToggle";
 import { OnboardingProvider } from "@/components/OnboardingProvider";
+import { HeaderNavigation } from "@/components/HeaderNavigation";
 
 const nunito = Nunito({ 
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
         <OpikProvider>
           <MedicalDisclaimerProvider>
             <OnboardingProvider>
+              <HeaderNavigation />
               {children}
               <SoundToggle />
             </OnboardingProvider>
