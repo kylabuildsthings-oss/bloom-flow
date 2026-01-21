@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
+  --font-nunito: 'Nunito', system-ui, sans-serif;
 }
 
 body {
@@ -16,10 +17,149 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  font-family: var(--font-nunito);
+}
+
+@layer base {
+  /* Ensure common UI elements have rounded borders */
+  button:not([class*="rounded"]),
+  .card:not([class*="rounded"]),
+  [class*="shadow"]:not([class*="rounded"]) {
+    @apply rounded-lg;
+  }
+  
+  /* Form inputs should have rounded borders */
+  input:not([class*="rounded"]),
+  textarea:not([class*="rounded"]),
+  select:not([class*="rounded"]) {
+    @apply rounded-lg;
+  }
+
+  /* Enhanced button hover states */
+  button:not(:disabled):not([class*="no-hover"]) {
+    @apply transition-all duration-200;
+  }
+
+  button:not(:disabled):not([class*="no-hover"]):hover {
+    @apply scale-105 brightness-110;
+  }
+
+  button:not(:disabled):not([class*="no-hover"]):active {
+    @apply scale-95;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+/* Isometric Garden Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+    opacity: 1;
+  }
+}
+
+@keyframes cloudMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 100px));
+  }
+}
+
+@keyframes plantBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Focus Factory Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0.5; 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.2); 
+  }
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes conveyorMove {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(800px);
+  }
+}
+
+/* Plant Growth Animation */
+@keyframes sproing {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3) rotate(5deg);
+  }
+  60% {
+    transform: scale(0.95) rotate(-3deg);
+  }
+  80% {
+    transform: scale(1.1) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-sproing {
+  animation: sproing 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Onboarding Highlight */
+.onboarding-highlight {
+  position: relative;
+  z-index: 99;
+  animation: highlightPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(58, 155, 95, 0.6), 0 0 40px rgba(58, 155, 95, 0.4) !important;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(58, 155, 95, 0.6), 0 0 40px rgba(58, 155, 95, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(58, 155, 95, 0.8), 0 0 60px rgba(58, 155, 95, 0.6);
+    transform: scale(1.05);
   }
 }

@@ -1,10 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Activity, Moon, Zap, Smile, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Activity, Moon, Zap, Smile, AlertCircle, Leaf } from 'lucide-react';
 import { HealthDataStorage } from '@/lib/storage';
 import { useOpik } from '@/lib/opik';
 import { HealthMetrics } from '@/lib/cycle-engine';
+import { GameItemCard } from './GameItemCard';
+import { playClickSound, playSuccessSound } from '@/lib/sound-effects';
+import { triggerScreenShake } from '@/lib/screen-shake';
+import { ParticleEffect } from './ParticleEffect';
 
 export function HealthMetricsTracker() {
   const [metrics, setMetrics] = useState<HealthMetrics[]>([]);
@@ -15,6 +19,9 @@ export function HealthMetricsTracker() {
     stress: 5,
   });
   const [isAdding, setIsAdding] = useState(false);
+  const [showParticles, setShowParticles] = useState(false);
+  const [particlePosition, setParticlePosition] = useState({ x: 50, y: 50 });
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
   const opik = useOpik();
 
   useEffect(() => {
@@ -69,6 +76,20 @@ export function HealthMetricsTracker() {
     setMetrics(updated);
     await saveMetrics(updated);
 
+    // Get button position for particle effect
+    if (saveButtonRef.current) {
+      const rect = saveButtonRef.current.getBoundingClientRect();
+      setParticlePosition({
+        x: (rect.left + rect.width / 2) / window.innerWidth * 100,
+        y: (rect.top + rect.height / 2) / window.innerHeight * 100,
+      });
+    }
+
+    // Trigger delightful feedback
+    triggerScreenShake('light');
+    playSuccessSound();
+    setShowParticles(true);
+
     // Reset form
     setTodayMetrics({
       sleepQuality: 5,
@@ -84,6 +105,9 @@ export function HealthMetricsTracker() {
       mood: metric.mood,
       stress: metric.stress,
     });
+
+    // Reset particles
+    setTimeout(() => setShowParticles(false), 1000);
   };
 
   const getMetricColor = (value: number): string => {
@@ -109,7 +133,7 @@ export function HealthMetricsTracker() {
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all duration-200 shadow-soft text-sm font-medium"
         >
           {isAdding ? 'Cancel' : 'Add Today'}
         </button>
@@ -117,45 +141,45 @@ export function HealthMetricsTracker() {
 
       {/* Today's Metrics */}
       {todayData && !isAdding && (
-        <div className="mb-6 p-4 bg-primary-50 rounded-lg border border-primary-200">
-          <h3 className="font-semibold text-primary-900 mb-3">Today's Metrics</h3>
+        <div className="mb-6">
+          <h3 className="font-semibold text-primary-900 mb-4">Today's Metrics</h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <Moon className="w-5 h-5 text-primary-600" />
-              <div className="flex-1">
-                <p className="text-sm text-primary-700">Sleep Quality</p>
-                <p className={`text-lg font-bold ${getMetricColor(todayData.sleepQuality)}`}>
-                  {todayData.sleepQuality}/10
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Zap className="w-5 h-5 text-primary-600" />
-              <div className="flex-1">
-                <p className="text-sm text-primary-700">Energy Level</p>
-                <p className={`text-lg font-bold ${getMetricColor(todayData.energyLevel)}`}>
-                  {todayData.energyLevel}/10
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Smile className="w-5 h-5 text-primary-600" />
-              <div className="flex-1">
-                <p className="text-sm text-primary-700">Mood</p>
-                <p className={`text-lg font-bold ${getMetricColor(todayData.mood)}`}>
-                  {todayData.mood}/10
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-primary-600" />
-              <div className="flex-1">
-                <p className="text-sm text-primary-700">Stress</p>
-                <p className={`text-lg font-bold ${getMetricColor(10 - todayData.stress)}`}>
-                  {todayData.stress}/10
-                </p>
-              </div>
-            </div>
+            <GameItemCard
+              title="Sleep Score"
+              value={`${todayData.sleepQuality}/10`}
+              icon={Moon}
+              iconColor={getMetricColor(todayData.sleepQuality)}
+              cornerIcon={<Leaf className="w-3 h-3 text-primary-500" />}
+              subtitle="Quality of rest"
+              variant="wood"
+            />
+            <GameItemCard
+              title="Energy Level"
+              value={`${todayData.energyLevel}/10`}
+              icon={Zap}
+              iconColor={getMetricColor(todayData.energyLevel)}
+              cornerIcon={<Leaf className="w-3 h-3 text-accent-500" />}
+              subtitle="Vitality today"
+              variant="wood"
+            />
+            <GameItemCard
+              title="Mood"
+              value={`${todayData.mood}/10`}
+              icon={Smile}
+              iconColor={getMetricColor(todayData.mood)}
+              cornerIcon={<Leaf className="w-3 h-3 text-primary-500" />}
+              subtitle="How you feel"
+              variant="wood"
+            />
+            <GameItemCard
+              title="Stress Level"
+              value={`${todayData.stress}/10`}
+              icon={AlertCircle}
+              iconColor={getMetricColor(10 - todayData.stress)}
+              cornerIcon={<Leaf className="w-3 h-3 text-accent-500" />}
+              subtitle="Lower is better"
+              variant="stone"
+            />
           </div>
         </div>
       )}
@@ -196,8 +220,9 @@ export function HealthMetricsTracker() {
               </div>
             ))}
             <button
+              ref={saveButtonRef}
               onClick={addTodayMetrics}
-              className="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+              className="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all duration-200 shadow-soft"
             >
               Save Metrics
             </button>
@@ -244,6 +269,15 @@ export function HealthMetricsTracker() {
           <p className="text-sm">Start tracking to see correlations with your cycle</p>
         </div>
       )}
+
+      {/* Particle Effect */}
+      <ParticleEffect
+        trigger={showParticles}
+        type="star"
+        x={particlePosition.x}
+        y={particlePosition.y}
+        onComplete={() => setShowParticles(false)}
+      />
     </div>
   );
 }

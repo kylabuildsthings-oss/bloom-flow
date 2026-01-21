@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, ReactNode } from 'react';
+import { sanitizeForLogging } from './data-sanitization';
 
 /**
  * Opik SDK integration for medical-grade tracking
@@ -39,37 +40,73 @@ export function OpikProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Initialize Opik SDK
     // In production: await opik.init({ apiKey, environment, etc. })
-    console.log('Opik SDK initialized');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Opik] SDK initialized');
+    }
   }, []);
 
   const logSensitive = (event: string, data?: Record<string, any>) => {
     // In production: opik.trace('sensitive', event, data)
-    console.log('[Opik Sensitive]', event, data);
+    // NEVER log sensitive data to console - only send to Opik SDK
+    if (process.env.NODE_ENV === 'development') {
+      const sanitized = sanitizeForLogging(data, false);
+      console.log('[Opik Sensitive]', event, sanitized);
+    }
+    // Production: opik.trace('sensitive', event, data)
   };
 
   const logNonSensitive = (event: string, data?: Record<string, any>) => {
     // In production: opik.trace('non-sensitive', event, data)
-    console.log('[Opik Non-Sensitive]', event, data);
+    if (process.env.NODE_ENV === 'development') {
+      const sanitized = sanitizeForLogging(data, true);
+      console.log('[Opik Non-Sensitive]', event, sanitized);
+    }
+    // Production: opik.trace('non-sensitive', event, data)
   };
 
   const logCompliance = (action: string, details: Record<string, any>) => {
     // In production: opik.compliance(action, details)
-    console.log('[Opik Compliance]', action, details);
+    if (process.env.NODE_ENV === 'development') {
+      const sanitized = sanitizeForLogging(details, true);
+      console.log('[Opik Compliance]', action, sanitized);
+    }
+    // Production: opik.compliance(action, details)
   };
 
   const logSafetyIncident = (incident: SafetyIncident) => {
     // In production: opik.safety.incident(incident)
-    console.log('[Opik Safety Incident]', incident);
-    
-    // Alert if critical
-    if (incident.severity === 'critical') {
-      console.error('CRITICAL SAFETY INCIDENT:', incident);
+    // Safety incidents are logged but data is sanitized
+    if (process.env.NODE_ENV === 'development') {
+      const sanitizedIncident = {
+        ...incident,
+        data: sanitizeForLogging(incident.data, false),
+      };
+      console.log('[Opik Safety Incident]', sanitizedIncident);
+      
+      // Alert if critical (but sanitize data)
+      if (incident.severity === 'critical') {
+        console.error('[CRITICAL SAFETY INCIDENT]', {
+          type: incident.type,
+          severity: incident.severity,
+          description: incident.description,
+          timestamp: incident.timestamp,
+          // Data is sanitized - never expose raw sensitive data
+        });
+      }
     }
+    // Production: opik.safety.incident(incident)
   };
 
   const logPrivacyMetric = (metric: PrivacyMetric) => {
     // In production: opik.privacy.metric(metric)
-    console.log('[Opik Privacy Metric]', metric);
+    if (process.env.NODE_ENV === 'development') {
+      const sanitized = {
+        ...metric,
+        details: sanitizeForLogging(metric.details, false),
+      };
+      console.log('[Opik Privacy Metric]', sanitized);
+    }
+    // Production: opik.privacy.metric(metric)
   };
 
   return (

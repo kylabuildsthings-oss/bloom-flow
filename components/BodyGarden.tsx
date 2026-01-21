@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Sprout, Info, Shield, BookOpen, TrendingUp } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Sprout, Info, Shield, BookOpen, TrendingUp, Flame, Award, Leaf } from 'lucide-react';
 import { GameEngine, GardenState, Plant, GardenZone, ActivityLog } from '@/lib/game-engine';
 import { GameStorage } from '@/lib/game-storage';
 import { HealthEducation, Discovery } from '@/lib/health-education';
@@ -10,6 +10,9 @@ import { HealthDataStorage } from '@/lib/storage';
 import { useOpik } from '@/lib/opik';
 import { OpikEngagement } from '@/lib/opik-engagement';
 import { ActivityLogger } from './ActivityLogger';
+import { GameItemCard } from './GameItemCard';
+import { IsometricGarden } from './IsometricGarden';
+import { playPlantGrowSound } from '@/lib/sound-effects';
 
 export function BodyGarden() {
   const [gardenState, setGardenState] = useState<GardenState | null>(null);
@@ -18,11 +21,39 @@ export function BodyGarden() {
   const [showDiscovery, setShowDiscovery] = useState<Discovery | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [greenhouseDays, setGreenhouseDays] = useState(0);
+  const [growingPlants, setGrowingPlants] = useState<Set<string>>(new Set());
+  const prevLevelsRef = useRef<Map<string, number>>(new Map());
   const opik = useOpik();
 
   useEffect(() => {
     loadGarden();
   }, []);
+
+  // Detect plant growth and trigger animation
+  useEffect(() => {
+    if (!gardenState) return;
+
+    gardenState.plants.forEach(plant => {
+      const prevLevel = prevLevelsRef.current.get(plant.id) ?? plant.level;
+      
+      if (plant.level > prevLevel) {
+        // Plant grew!
+        setGrowingPlants(prev => new Set(prev).add(plant.id));
+        playPlantGrowSound();
+        
+        // Remove from growing set after animation
+        setTimeout(() => {
+          setGrowingPlants(prev => {
+            const next = new Set(prev);
+            next.delete(plant.id);
+            return next;
+          });
+        }, 600);
+      }
+      
+      prevLevelsRef.current.set(plant.id, plant.level);
+    });
+  }, [gardenState]);
 
   useEffect(() => {
     if (gardenState && currentPhase) {
@@ -250,17 +281,34 @@ export function BodyGarden() {
             <Sprout className="text-primary-600 w-6 h-6" />
             <h2 className="text-2xl font-bold text-primary-700">Body Garden</h2>
           </div>
-          <div className="flex items-center gap-4">
-            {gardenState.greenhouseMode && (
-              <div className="flex items-center gap-2 text-sm text-green-600">
-                <Shield className="w-4 h-4" />
-                <span>Greenhouse Mode Active</span>
-              </div>
-            )}
-            <div className="text-sm text-neutral-600">
-              <span className="font-semibold">Streak:</span> {gardenState.streakDays} days
+          {gardenState.greenhouseMode && (
+            <div className="flex items-center gap-2 text-sm text-green-600">
+              <Shield className="w-4 h-4" />
+              <span>Greenhouse Mode Active</span>
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Metric Cards */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <GameItemCard
+            title="Habit Streak"
+            value={`${gardenState.streakDays} days`}
+            icon={Flame}
+            iconColor="text-accent-600"
+            cornerIcon={<Leaf className="w-3 h-3 text-accent-500" />}
+            subtitle="Keep it going!"
+            variant="wood"
+          />
+          <GameItemCard
+            title="Garden Level"
+            value={totalLevel}
+            icon={Award}
+            iconColor="text-primary-600"
+            cornerIcon={<Leaf className="w-3 h-3 text-primary-500" />}
+            subtitle="Total growth"
+            variant="stone"
+          />
         </div>
 
         {/* Phase Indicator */}
@@ -299,6 +347,15 @@ export function BodyGarden() {
         </div>
       </div>
 
+      {/* Isometric Garden Visualization */}
+      <div className="bg-gradient-to-br from-white via-primary-50/30 to-secondary-50/30 rounded-2xl shadow-soft-xl p-8 border-2 border-primary-200 mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-3xl">🌻</span>
+          <h3 className="text-2xl font-bold text-primary-700">Your Garden</h3>
+        </div>
+        <IsometricGarden plants={gardenState.plants} />
+      </div>
+
       {/* Garden Zones */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {gardenState.plants.map(plant => {
@@ -324,7 +381,15 @@ export function BodyGarden() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-4xl ${visual.color}`} style={{ fontSize: `${visual.size * 2}rem` }}>
+                    <span
+                      className={`text-4xl ${visual.color} transition-transform duration-300 ${
+                        growingPlants.has(plant.id) ? 'animate-sproing' : ''
+                      }`}
+                      style={{
+                        fontSize: `${visual.size * 2}rem`,
+                        display: 'inline-block',
+                      }}
+                    >
                       {visual.emoji}
                     </span>
                     <div>

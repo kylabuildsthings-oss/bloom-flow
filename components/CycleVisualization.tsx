@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, TrendingUp, Info } from 'lucide-react';
+import { Calendar, TrendingUp, Info, Leaf } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { HealthDataStorage } from '@/lib/storage';
 import { useOpik } from '@/lib/opik';
 import { format, subDays, parseISO } from 'date-fns';
+import { GameItemCard } from './GameItemCard';
 
 interface CycleDay {
   date: string;
@@ -130,22 +131,27 @@ export function CycleVisualization() {
         </div>
       </div>
 
-      {currentPhase && (
-        <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: `${PHASE_COLORS[currentPhase]}20` }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-neutral-600 mb-1">Current Phase</p>
-              <p className="text-xl font-bold" style={{ color: PHASE_COLORS[currentPhase] }}>
-                {PHASE_INFO[currentPhase].name}
-              </p>
-            </div>
-            <button
-              onClick={() => setSelectedInfo(selectedInfo === currentPhase ? null : currentPhase)}
-              className="p-2 rounded-full hover:bg-white/50 transition-colors"
-            >
-              <Info className="w-5 h-5" style={{ color: PHASE_COLORS[currentPhase] }} />
-            </button>
-          </div>
+      {currentPhase && cycleData.length > 0 && (
+        <div className="mb-6 grid grid-cols-2 gap-4">
+          <GameItemCard
+            title="Cycle Day"
+            value={cycleData[cycleData.length - 1].day}
+            icon={Calendar}
+            iconColor="text-primary-600"
+            cornerIcon={<Leaf className="w-3 h-3 text-primary-500" />}
+            subtitle={`Day ${cycleData[cycleData.length - 1].day} of cycle`}
+            variant="wood"
+          />
+          <GameItemCard
+            title="Current Phase"
+            value={PHASE_INFO[currentPhase].name.split(' ')[0]}
+            icon={Calendar}
+            iconColor="text-primary-600"
+            cornerIcon={<Leaf className="w-3 h-3" style={{ color: PHASE_COLORS[currentPhase] }} />}
+            subtitle={PHASE_INFO[currentPhase].typicalLength}
+            variant="stone"
+            onClick={() => setSelectedInfo(selectedInfo === currentPhase ? null : currentPhase)}
+          />
         </div>
       )}
 

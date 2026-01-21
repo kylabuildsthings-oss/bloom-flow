@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Plus, Heart, CheckCircle, Moon } from 'lucide-react';
 import { GardenZone, ActivityLog } from '@/lib/game-engine';
 import { GameEngine } from '@/lib/game-engine';
+import { triggerScreenShake } from '@/lib/screen-shake';
+import { playSuccessSound } from '@/lib/sound-effects';
+import { ParticleEffect } from './ParticleEffect';
 
 interface ActivityLoggerProps {
   zone: GardenZone;
@@ -22,6 +25,9 @@ export function ActivityLogger({ zone, onActivityLogged }: ActivityLoggerProps) 
   const [outcome, setOutcome] = useState<ActivityLog['outcome']>('completed-activity');
   const [duration, setDuration] = useState<number | undefined>();
   const [intensity, setIntensity] = useState<'low' | 'medium' | 'high' | undefined>();
+  const [showParticles, setShowParticles] = useState(false);
+  const [particlePosition, setParticlePosition] = useState({ x: 50, y: 50 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleSubmit = () => {
     if (!activity.trim()) {
@@ -29,14 +35,31 @@ export function ActivityLogger({ zone, onActivityLogged }: ActivityLoggerProps) 
       return;
     }
 
+    // Get button position for particle effect
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setParticlePosition({
+        x: (rect.left + rect.width / 2) / window.innerWidth * 100,
+        y: (rect.top + rect.height / 2) / window.innerHeight * 100,
+      });
+    }
+
+    // Trigger delightful feedback
+    triggerScreenShake('medium');
+    playSuccessSound();
+    setShowParticles(true);
+
     onActivityLogged(zone, activity, outcome, duration, intensity);
     
     // Reset form
-    setActivity('');
-    setOutcome('completed-activity');
-    setDuration(undefined);
-    setIntensity(undefined);
-    setIsOpen(false);
+    setTimeout(() => {
+      setActivity('');
+      setOutcome('completed-activity');
+      setDuration(undefined);
+      setIntensity(undefined);
+      setIsOpen(false);
+      setShowParticles(false);
+    }, 500);
   };
 
   const getZoneName = (zone: GardenZone): string => {
@@ -53,7 +76,7 @@ export function ActivityLogger({ zone, onActivityLogged }: ActivityLoggerProps) 
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-sm flex items-center justify-center gap-2"
+        className="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all duration-200 shadow-soft text-sm flex items-center justify-center gap-2"
       >
         <Plus className="w-4 h-4" />
         Log Activity
@@ -184,8 +207,9 @@ export function ActivityLogger({ zone, onActivityLogged }: ActivityLoggerProps) 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
           <button
+            ref={buttonRef}
             onClick={handleSubmit}
-            className="flex-1 bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
+            className="flex-1 bg-primary-600 text-white py-2 rounded-lg font-semibold hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all duration-200 shadow-soft"
           >
             Log Activity
           </button>
@@ -203,6 +227,15 @@ export function ActivityLogger({ zone, onActivityLogged }: ActivityLoggerProps) 
           </button>
         </div>
       </div>
+
+      {/* Particle Effect */}
+      <ParticleEffect
+        trigger={showParticles}
+        type="star"
+        x={particlePosition.x}
+        y={particlePosition.y}
+        onComplete={() => setShowParticles(false)}
+      />
     </div>
   );
 }
