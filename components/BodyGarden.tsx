@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Sprout, Info, Shield, BookOpen, TrendingUp, Flame, Award, Leaf } from 'lucide-react';
+import { Sprout, Info, Shield, TrendingUp, Flame, Award, Leaf } from 'lucide-react';
 import { GameEngine, GardenState, Plant, GardenZone, ActivityLog } from '@/lib/game-engine';
 import { GameStorage } from '@/lib/game-storage';
-import { HealthEducation, Discovery } from '@/lib/health-education';
+import { HealthEducation } from '@/lib/health-education';
 import { CycleEngine, CyclePhase } from '@/lib/cycle-engine';
 import { HealthDataStorage } from '@/lib/storage';
 import { useOpik } from '@/lib/opik';
@@ -18,10 +18,10 @@ export function BodyGarden() {
   const [gardenState, setGardenState] = useState<GardenState | null>(null);
   const [currentPhase, setCurrentPhase] = useState<CyclePhase | null>(null);
   const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
-  const [showDiscovery, setShowDiscovery] = useState<Discovery | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [greenhouseDays, setGreenhouseDays] = useState(0);
   const [growingPlants, setGrowingPlants] = useState<Set<string>>(new Set());
+  const [showSoilInfo, setShowSoilInfo] = useState(false);
   const prevLevelsRef = useRef<Map<string, number>>(new Map());
   const opik = useOpik();
 
@@ -64,11 +64,8 @@ export function BodyGarden() {
       );
       
       if (unlocked.length > 0) {
-        const discovery = HealthEducation.getDiscovery(unlocked[0]);
-        if (discovery) {
-          setShowDiscovery(discovery);
-          // Update state with new discoveries
-          const updated = {
+        // Update state with new discoveries (no discovery modal shown)
+        const updated = {
             ...gardenState,
             discoveries: [...gardenState.discoveries, ...unlocked],
           };
@@ -80,7 +77,6 @@ export function BodyGarden() {
             timestamp: new Date(),
             metadata: { discoveryId: unlocked[0] },
           }, opik);
-        }
       }
     }
   }, [gardenState, currentPhase, opik]);
@@ -272,6 +268,11 @@ export function BodyGarden() {
   const phaseMultiplier = currentPhase ? GameEngine.getPhaseMultiplier(currentPhase) : null;
   const totalLevel = gardenState.plants.reduce((sum, p) => sum + p.level, 0);
 
+  // Days of streak protection remaining when Greenhouse Mode is active
+  const streakProtectionDaysRemaining = gardenState.greenhouseUntil
+    ? Math.max(0, Math.ceil((gardenState.greenhouseUntil.getTime() - Date.now()) / (24 * 60 * 60 * 1000)))
+    : 0;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -282,9 +283,14 @@ export function BodyGarden() {
             <h2 className="text-2xl font-bold text-primary-700">Body Garden</h2>
           </div>
           {gardenState.greenhouseMode && (
-            <div className="flex items-center gap-2 text-sm text-green-600">
-              <Shield className="w-4 h-4" />
-              <span>Greenhouse Mode Active</span>
+            <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">
+              <Shield className="w-4 h-4 shrink-0" />
+              <span>
+                <strong>Streak protected:</strong>{' '}
+                {streakProtectionDaysRemaining === 0
+                  ? 'Last day'
+                  : `${streakProtectionDaysRemaining} day${streakProtectionDaysRemaining === 1 ? '' : 's'} remaining`}
+              </span>
             </div>
           )}
         </div>
@@ -299,6 +305,7 @@ export function BodyGarden() {
             cornerIcon={<Leaf className="w-3 h-3 text-accent-500" />}
             subtitle="Keep it going!"
             variant="wood"
+            infoTooltip="Consecutive days you've logged activity or rest. Keeping a streak shows consistency. Greenhouse Mode can protect your streak when you need a break (travel, illness, or rest)."
           />
           <GameItemCard
             title="Garden Level"
@@ -308,6 +315,7 @@ export function BodyGarden() {
             cornerIcon={<Leaf className="w-3 h-3 text-primary-500" />}
             subtitle="Total growth"
             variant="stone"
+            infoTooltip="Your total growth across all zones—the sum of each plant's level (Sleep, Nutrition, Movement, Stress). Higher levels unlock discoveries and show your overall progress."
           />
         </div>
 
@@ -316,7 +324,29 @@ export function BodyGarden() {
           <div className={`p-4 rounded-lg border ${getZoneColor('nutrition')}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-neutral-700 mb-1">Current Soil Condition</p>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <p className="text-sm font-medium text-neutral-700">Current Soil Condition</p>
+                  <div className="relative shrink-0">
+                    <button
+                      type="button"
+                      aria-label="What does soil condition mean?"
+                      onClick={() => setShowSoilInfo((v) => !v)}
+                      onBlur={() => setShowSoilInfo(false)}
+                      className="p-0.5 rounded-full text-neutral-500 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-400"
+                      title="Reflects your menstrual cycle phase and how it affects growth. Fertile soil (follicular/ovulation) gives a growth boost; resting soil (menstrual) is gentler; balanced soil (luteal) is steady."
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    {showSoilInfo && (
+                      <div
+                        className="absolute left-0 top-full mt-1 z-10 w-64 p-3 text-xs text-neutral-700 bg-white border border-neutral-200 rounded-lg shadow-lg"
+                        role="tooltip"
+                      >
+                        Reflects your menstrual cycle phase and how it affects growth in the garden. &quot;Fertile soil&quot; (follicular/ovulation) gives a growth boost; &quot;resting soil&quot; (menstrual) is gentler; &quot;balanced soil&quot; (luteal) is steady. Your garden adapts to your body.
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <p className="text-lg font-bold capitalize text-neutral-800">
                   {phaseMultiplier.description}
                 </p>
@@ -453,20 +483,33 @@ export function BodyGarden() {
         </div>
         <p className="text-sm text-neutral-600 mb-4">
           Enable Greenhouse Mode to protect your streak during travel, illness, or when you need a break.
-          Your plants will maintain their state - no guilt, just rest.
+          Your plants will maintain their state—no guilt, just rest.
         </p>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <label htmlFor="streak-protection-days" className="text-sm font-medium text-neutral-700">
+            Protect my streak for
+          </label>
           <input
+            id="streak-protection-days"
             type="number"
             min="1"
             max="30"
-            value={greenhouseDays}
-            onChange={(e) => setGreenhouseDays(parseInt(e.target.value) || 0)}
-            className="w-20 px-3 py-2 border border-neutral-300 rounded-lg"
-            placeholder="Days"
+            value={greenhouseDays || ''}
+            onChange={(e) => setGreenhouseDays(parseInt(e.target.value, 10) || 0)}
+            className="w-16 px-3 py-2 border border-neutral-300 rounded-lg text-center tabular-nums"
+            placeholder="0"
+            aria-label="Number of days to protect streak"
           />
+          <span className="text-sm font-medium text-neutral-700">days</span>
           <button
-            onClick={() => greenhouseDays > 0 && enableGreenhouse(greenhouseDays)}
+            onClick={() => {
+              const days = greenhouseDays || 0;
+              if (days < 1 || days > 30) {
+                alert('Please enter a number of days between 1 and 30 to protect your streak.');
+                return;
+              }
+              enableGreenhouse(days);
+            }}
             className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
           >
             Enable Greenhouse Mode
@@ -474,77 +517,6 @@ export function BodyGarden() {
         </div>
       </div>
 
-      {/* Discoveries */}
-      {gardenState.discoveries.length > 0 && (
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-neutral-200">
-          <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="w-5 h-5 text-primary-600" />
-            <h3 className="font-semibold text-neutral-800">Your Discoveries</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {gardenState.discoveries.map(discoveryId => {
-              const discovery = HealthEducation.getDiscovery(discoveryId);
-              if (!discovery) return null;
-              return (
-                <div
-                  key={discoveryId}
-                  className="p-3 bg-primary-50 rounded-lg border border-primary-200 cursor-pointer hover:bg-primary-100 transition-colors"
-                  onClick={() => setShowDiscovery(discovery)}
-                >
-                  <p className="font-medium text-primary-900">{discovery.title}</p>
-                  <p className="text-xs text-primary-700 mt-1">{discovery.unlockedAt}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Discovery Modal */}
-      {showDiscovery && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-primary-700">{showDiscovery.title}</h2>
-                <button
-                  onClick={() => setShowDiscovery(null)}
-                  className="text-neutral-500 hover:text-neutral-700"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="prose max-w-none mb-4">
-                <p className="text-neutral-700 whitespace-pre-line">{showDiscovery.content}</p>
-              </div>
-              {showDiscovery.sources.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-neutral-200">
-                  <p className="text-sm font-semibold text-neutral-800 mb-2">Research Sources:</p>
-                  <ul className="space-y-2">
-                    {showDiscovery.sources.map((source, idx) => (
-                      <li key={idx} className="text-xs text-neutral-600">
-                        {source.title}
-                        {source.authors && <span> - {source.authors}</span>}
-                        {source.journal && <span className="italic"> - {source.journal}</span>}
-                        {source.year && <span> ({source.year})</span>}
-                        {source.doi && (
-                          <span className="text-primary-600"> - DOI: {source.doi}</span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <button
-                onClick={() => setShowDiscovery(null)}
-                className="mt-6 w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

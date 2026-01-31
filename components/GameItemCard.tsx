@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { ReactNode, useState } from 'react';
+import { LucideIcon, Info } from 'lucide-react';
 
 interface GameItemCardProps {
   title: string;
@@ -10,6 +10,8 @@ interface GameItemCardProps {
   iconColor?: string;
   cornerIcon?: ReactNode;
   subtitle?: string;
+  /** Optional tooltip text; shows an info icon next to the title when set */
+  infoTooltip?: string;
   className?: string;
   variant?: 'wood' | 'stone';
   onClick?: () => void;
@@ -22,10 +24,12 @@ export function GameItemCard({
   iconColor = 'text-primary-600',
   cornerIcon,
   subtitle,
+  infoTooltip,
   className = '',
   variant = 'wood',
   onClick,
 }: GameItemCardProps) {
+  const [showTooltip, setShowTooltip] = useState(false);
   // Create canvas texture using CSS - subtle noise pattern
   const textureStyle = {
     backgroundImage: `
@@ -46,7 +50,7 @@ export function GameItemCard({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-lg border-2 ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform' : ''} ${className}`}
+      className={`relative overflow-visible rounded-lg border-2 ${onClick ? 'cursor-pointer hover:scale-[1.02] transition-transform' : ''} ${className}`}
       style={{
         backgroundColor: 'rgba(255, 255, 255, 0.85)',
         backdropFilter: 'blur(4px)',
@@ -72,10 +76,35 @@ export function GameItemCard({
           </div>
         )}
 
-        {/* Main icon */}
-        <div className="flex items-center gap-3 mb-2">
-          <Icon className={`w-5 h-5 ${iconColor}`} />
-          <h3 className="text-sm font-semibold text-neutral-800">{title}</h3>
+        {/* Main icon + title + optional info (info sits next to title so it's not clipped) */}
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <Icon className={`w-5 h-5 shrink-0 ${iconColor}`} />
+          <h3 className="text-sm font-semibold text-neutral-800 shrink-0">{title}</h3>
+          {infoTooltip && (
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                aria-label="What does this mean?"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowTooltip((v) => !v);
+                }}
+                onBlur={() => setShowTooltip(false)}
+                className="p-1 rounded-full text-neutral-500 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-1"
+                title={infoTooltip}
+              >
+                <Info className="w-4 h-4" />
+              </button>
+              {showTooltip && (
+                <div
+                  className="absolute left-0 top-full mt-1 z-20 w-64 max-w-[calc(100vw-2rem)] p-3 text-xs text-neutral-700 bg-white border border-neutral-200 rounded-lg shadow-lg"
+                  role="tooltip"
+                >
+                  {infoTooltip}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Value */}
