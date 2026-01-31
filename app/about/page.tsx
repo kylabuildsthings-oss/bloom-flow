@@ -1,6 +1,6 @@
 'use client';
 
-import { Info, Moon, Utensils, Activity, Heart, Brain, Target, Cpu, Zap, Shield } from 'lucide-react';
+import { Info, Moon, Utensils, Activity, Heart, Brain, Target, Cpu, Zap, Shield, Calendar } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -107,6 +107,58 @@ export default function AboutPage() {
                 </div>
               </li>
             </ul>
+          </section>
+
+          {/* Cycle Phases */}
+          <section className="bg-white rounded-xl shadow-soft-lg p-6 border-2 border-primary-200">
+            <div className="flex items-center gap-3 mb-4">
+              <Calendar className="w-6 h-6 text-primary-600" />
+              <h2 className="text-2xl font-bold text-primary-700">Understanding Your Cycle Phases</h2>
+            </div>
+            <p className="text-neutral-700 mb-6">
+              Your menstrual cycle has four main phases. BloomFlow uses these to personalize your garden and fitness insights. Here&apos;s what each phase typically means:
+            </p>
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                <h3 className="font-bold text-red-800 mb-2">Menstrual phase</h3>
+                <p className="text-sm text-neutral-700 mb-1">
+                  <strong>Typical length:</strong> About 3–7 days (day 1 of your period is day 1 of your cycle).
+                </p>
+                <p className="text-sm text-neutral-700">
+                  Your body is shedding the uterine lining. Energy and strength can be lower—this is normal and healthy. In BloomFlow, this shows as &quot;resting soil&quot;: a time for gentler movement, rest, and recovery. Your garden still grows; we just honor that your body may need more care.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-green-50 border border-green-200">
+                <h3 className="font-bold text-green-800 mb-2">Follicular phase</h3>
+                <p className="text-sm text-neutral-700 mb-1">
+                  <strong>Typical length:</strong> About 10–16 days (from after your period until ovulation).
+                </p>
+                <p className="text-sm text-neutral-700">
+                  Estrogen rises and follicles develop. Many people feel more energetic and ready for stronger workouts. In BloomFlow, this is &quot;fertile soil&quot;—a great time to build habits and push a bit more in the garden and in your training.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200">
+                <h3 className="font-bold text-emerald-800 mb-2">Ovulation</h3>
+                <p className="text-sm text-neutral-700 mb-1">
+                  <strong>Typical length:</strong> About 1–3 days (around mid-cycle).
+                </p>
+                <p className="text-sm text-neutral-700">
+                  The egg is released; estrogen peaks. Energy and performance are often at their highest. In BloomFlow, this is &quot;peak fertile soil&quot;—the best time for high-intensity or goal-focused workouts and maximum growth in your garden.
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-amber-50 border border-amber-200">
+                <h3 className="font-bold text-amber-800 mb-2">Luteal phase</h3>
+                <p className="text-sm text-neutral-700 mb-1">
+                  <strong>Typical length:</strong> About 10–16 days (from after ovulation until your next period).
+                </p>
+                <p className="text-sm text-neutral-700">
+                  Progesterone rises; the body prepares for a possible pregnancy or the next period. Energy may dip in the second half (especially premenstrually). In BloomFlow, this is &quot;balanced soil&quot;—steady growth and sustainable effort, with room for rest as you approach your period.
+                </p>
+              </div>
+            </div>
+            <p className="text-neutral-600 text-sm mt-4 italic">
+              Cycle lengths and phase lengths vary from person to person. BloomFlow adapts to your data so you see the phases that fit your body.
+            </p>
           </section>
 
           {/* Best Times to Work Out */}
