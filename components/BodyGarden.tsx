@@ -12,6 +12,7 @@ import { OpikEngagement } from '@/lib/opik-engagement';
 import { ActivityLogger } from './ActivityLogger';
 import { GameItemCard } from './GameItemCard';
 import { IsometricGarden } from './IsometricGarden';
+import { GardenCalendar } from './GardenCalendar';
 import { playPlantGrowSound } from '@/lib/sound-effects';
 
 export function BodyGarden() {
@@ -390,6 +391,9 @@ export function BodyGarden() {
         </div>
         <IsometricGarden plants={gardenState.plants} />
       </div>
+
+      {/* Calendar - just below Your Garden */}
+      <GardenCalendar />
 
       {/* Garden Zones */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

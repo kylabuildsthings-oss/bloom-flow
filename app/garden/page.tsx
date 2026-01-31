@@ -24,7 +24,6 @@ export default function GardenPage() {
 
         <div className="space-y-8">
           <BodyGarden />
-          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CycleVisualization />
             <SymptomTracker />
