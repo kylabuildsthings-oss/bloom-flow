@@ -31,6 +31,7 @@ export class GameStorage {
         lastWatered: new Date(p.lastWatered),
       })),
       greenhouseUntil: state.greenhouseUntil ? new Date(state.greenhouseUntil) : undefined,
+      coins: state.coins ?? 0,
     };
   }
 
@@ -122,6 +123,7 @@ export class GameStorage {
       greenhouseMode: false,
       discoveries: [],
       totalEffortPoints: 0,
+      coins: 0,
     };
   }
 }

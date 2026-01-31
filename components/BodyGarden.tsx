@@ -152,6 +152,10 @@ export function BodyGarden() {
     if (!plant) return;
 
     const updatedPlant = GameEngine.updatePlantGrowth(plant, growth, currentPhase);
+    const levelGained = updatedPlant.level > plant.level;
+
+    // Coins earned from this activity (and level-up bonus)
+    const coinsEarned = GameEngine.calculateCoinsEarned(effortPoints, levelGained);
 
     // Update streak
     const newStreak = GameEngine.updateStreak(
@@ -171,12 +175,13 @@ export function BodyGarden() {
 
     await GameStorage.saveActivityLog(activityLog);
 
-    // Update state
+    // Update state (including coins)
     const updatedState: GardenState = {
       ...gardenState,
       plants: gardenState.plants.map(p => p.id === plant.id ? updatedPlant : p),
       streakDays: newStreak,
       totalEffortPoints: gardenState.totalEffortPoints + effortPoints,
+      coins: (gardenState.coins ?? 0) + coinsEarned,
       lastUpdated: new Date(),
     };
 

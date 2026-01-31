@@ -1,6 +1,6 @@
 'use client';
 
-import { ProgressReport } from '@/components/ProgressReport';
+import { CoinCottageBalance } from '@/components/CoinCottageBalance';
 import { ConsentFlow } from '@/components/ConsentFlow';
 import { WellnessRecommendations } from '@/components/WellnessRecommendations';
 import { HealthImpactAnalysis } from '@/components/HealthImpactAnalysis';
@@ -16,13 +16,13 @@ export default function CottagePage() {
             <h1 className="text-4xl font-bold text-accent-700">Coin Cottage</h1>
           </div>
           <p className="text-neutral-600 text-lg">
-            Track your wellness achievements and earn rewards for your health journey. Every milestone matters, every coin counts.
+            Earn coins when you add information in the Body Garden and when your plants level up. Spend coins in the Focus Factory to play games (coming soon).
           </p>
         </header>
 
         <div className="space-y-8">
+          <CoinCottageBalance />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ProgressReport />
             <ConsentFlow />
           </div>
           

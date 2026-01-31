@@ -27,6 +27,8 @@ export interface GardenState {
   greenhouseUntil?: Date;
   discoveries: string[]; // Unlocked educational content
   totalEffortPoints: number;
+  /** Coins earned from Body Garden; spend in Focus Factory games */
+  coins: number;
 }
 
 export interface ActivityLog {
@@ -190,6 +192,19 @@ export class GameEngine {
         health,
       };
     });
+  }
+
+  /**
+   * Calculate coins earned from an activity (linked to Body Garden)
+   * Coins are earned when users add information; bonus when a plant levels up
+   */
+  static calculateCoinsEarned(
+    effortPoints: number,
+    levelGained: boolean
+  ): number {
+    const activityCoins = Math.max(5, Math.floor(effortPoints * 1.5)); // At least 5, scale with effort
+    const levelBonus = levelGained ? 15 : 0; // Bonus when a plant levels up
+    return activityCoins + levelBonus;
   }
 
   /**
