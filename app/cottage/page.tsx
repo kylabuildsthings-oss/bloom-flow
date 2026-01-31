@@ -1,10 +1,10 @@
 'use client';
 
 import { CoinCottageBalance } from '@/components/CoinCottageBalance';
-import { ConsentFlow } from '@/components/ConsentFlow';
+import { CottageSocialAccountability } from '@/components/CottageSocialAccountability';
+import { CottageWorkoutPlans } from '@/components/CottageWorkoutPlans';
 import { WellnessRecommendations } from '@/components/WellnessRecommendations';
 import { HealthImpactAnalysis } from '@/components/HealthImpactAnalysis';
-import { AuditTrail } from '@/components/AuditTrail';
 
 export default function CottagePage() {
   return (
@@ -22,16 +22,12 @@ export default function CottagePage() {
 
         <div className="space-y-8">
           <CoinCottageBalance />
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ConsentFlow />
-          </div>
-          
+          <CottageSocialAccountability />
+          <CottageWorkoutPlans />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <WellnessRecommendations />
             <HealthImpactAnalysis />
           </div>
-          
-          <AuditTrail />
         </div>
       </div>
     </main>
