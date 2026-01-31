@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Trophy, ArrowRight, Sprout, Coins, Target } from 'lucide-react';
+import { Trophy, ArrowRight, Sprout, Coins, Target, Sparkles } from 'lucide-react';
 import { IsometricGarden } from '@/components/IsometricGarden';
 import { GameEngine, GardenState } from '@/lib/game-engine';
 import { GameStorage } from '@/lib/game-storage';
@@ -45,6 +45,19 @@ export default function Home() {
             </Link>
           </div>
         </header>
+
+        {/* Motivational Message */}
+        <section className="mb-8 rounded-xl bg-gradient-to-r from-primary-100 to-secondary-100 p-6 border-2 border-primary-200">
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-7 h-7 text-primary-600 shrink-0 mt-0.5" />
+            <div>
+              <h2 className="text-xl font-bold text-primary-700 mb-1">You&apos;ve got this.</h2>
+              <p className="text-neutral-700">
+                BloomFlow is here to help you achieve your New Year&apos;s goals. Track your cycle, sleep, and habits so you can work out at the times that work best for your body—and stick with it all year long.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Isometric Overview Map */}
         <section className="mb-12">

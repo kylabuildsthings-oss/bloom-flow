@@ -1,8 +1,11 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X, Scroll, Shield } from 'lucide-react';
 import { useOpik } from '@/lib/opik';
+
+const BANNER_DISMISSED_KEY = 'bloomflow_disclaimer_banner_dismissed';
 
 interface StyledMedicalDisclaimerProps {
   isVisible: boolean;
@@ -30,6 +33,17 @@ export function StyledMedicalDisclaimer({
   emergencyResources,
 }: StyledMedicalDisclaimerProps) {
   const opik = useOpik();
+  const [bannerDismissed, setBannerDismissed] = useState(true); // start true to avoid flash, then sync from localStorage
+
+  useEffect(() => {
+    const stored = localStorage.getItem(BANNER_DISMISSED_KEY);
+    setBannerDismissed(stored === 'true');
+  }, []);
+
+  const dismissBanner = () => {
+    setBannerDismissed(true);
+    localStorage.setItem(BANNER_DISMISSED_KEY, 'true');
+  };
 
   return (
     <>
@@ -165,28 +179,42 @@ export function StyledMedicalDisclaimer({
         )}
       </AnimatePresence>
 
-      {/* Persistent Scroll Banner at Bottom */}
-      <motion.div
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        className="fixed bottom-0 left-0 right-0 z-[150] pointer-events-none"
-      >
-        <div className="container mx-auto px-4 pb-4">
+      {/* Persistent Scroll Banner at Bottom - dismissible */}
+      <AnimatePresence>
+        {!bannerDismissed && (
           <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200 border-2 border-stone-400 rounded-t-2xl shadow-2xl p-4 pointer-events-auto"
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            className="fixed bottom-0 left-0 right-0 z-[150] pointer-events-none"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 flex-1">
-                <Scroll className="w-6 h-6 text-stone-700" />
-                <p className="text-sm font-semibold text-stone-800">
-                  <strong className="text-red-600">Not medical advice.</strong> Consult your healthcare provider for medical concerns.
-                </p>
-              </div>
+            <div className="container mx-auto px-4 pb-4">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="bg-gradient-to-br from-stone-100 via-stone-50 to-stone-200 border-2 border-stone-400 rounded-t-2xl shadow-2xl p-4 pointer-events-auto"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Scroll className="w-6 h-6 text-stone-700 shrink-0" />
+                    <p className="text-sm font-semibold text-stone-800">
+                      <strong className="text-red-600">Not medical advice.</strong> Consult your healthcare provider for medical concerns.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={dismissBanner}
+                    aria-label="Dismiss disclaimer banner"
+                    className="shrink-0 p-1.5 rounded-lg text-stone-600 hover:bg-stone-300/50 hover:text-stone-800 transition-colors focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-1"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
-        </div>
-      </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Red Flag Alert - Stone Tablet Style */}
       <AnimatePresence>
