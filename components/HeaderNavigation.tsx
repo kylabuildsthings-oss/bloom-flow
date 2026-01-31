@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Sprout, Coins, Cog, Settings, HelpCircle, Menu, X } from 'lucide-react';
+import { Home, Sprout, Coins, Cog, Settings, HelpCircle, Info, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +15,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: '/', label: 'Home', icon: <Home className="w-5 h-5" />, emoji: '🏠' },
+  { href: '/about', label: 'About', icon: <Info className="w-5 h-5" />, emoji: '🌻' },
   { href: '/garden', label: 'Garden', icon: <Sprout className="w-5 h-5" />, emoji: '🌿' },
   { href: '/cottage', label: 'Cottage', icon: <Coins className="w-5 h-5" />, emoji: '🪙' },
   { href: '/factory', label: 'Factory', icon: <Cog className="w-5 h-5" />, emoji: '⚙️' },

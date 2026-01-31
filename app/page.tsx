@@ -118,25 +118,6 @@ export default function Home() {
             </span>
           </Link>
         </div>
-
-        {/* About Section */}
-        <section className="bg-gradient-to-r from-primary-100 to-secondary-100 rounded-xl p-8 border-2 border-primary-200">
-          <h2 className="text-2xl font-bold text-primary-700 mb-4">About BloomFlow</h2>
-          <div className="space-y-4 text-neutral-700">
-            <p>
-              BloomFlow is a medical-grade health tracking application designed to help you understand and improve your wellness journey. 
-              We combine gamification with serious health tracking to make your journey engaging and effective.
-            </p>
-            <p>
-              Our platform uses AI-powered insights to provide personalized recommendations while maintaining the highest standards of 
-              data privacy and security. All sensitive health data is encrypted and stored locally on your device.
-            </p>
-            <p className="font-semibold text-primary-700">
-              ⚠️ Important: BloomFlow is not a substitute for professional medical advice. Always consult your healthcare provider 
-              for medical concerns.
-            </p>
-          </div>
-        </section>
       </div>
     </main>
   );
