@@ -1,6 +1,6 @@
 'use client';
 
-import { Info, Moon, Utensils, Activity, Heart, Brain, Target } from 'lucide-react';
+import { Info, Moon, Utensils, Activity, Heart, Brain, Target, Cpu, Zap, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -18,6 +18,54 @@ export default function AboutPage() {
         </header>
 
         <div className="space-y-8">
+          {/* The cycle as your central operating system */}
+          <section className="bg-white rounded-xl shadow-soft-xl p-6 border-2 border-primary-200">
+            <div className="flex items-center gap-3 mb-4">
+              <Cpu className="w-7 h-7 text-primary-600" />
+              <h2 className="text-2xl font-bold text-primary-700">
+                The cycle as your central operating system
+              </h2>
+            </div>
+            <p className="text-neutral-700 mb-4 leading-relaxed">
+              BloomFlow is your <strong className="text-primary-700">cycle-aware fitness coach</strong>. It turns your menstrual cycle from a workout hurdle into a personalized training advantage, using Opik&apos;s AI and gamification to keep you motivated and consistent all year long—so you can meet your fitness goals.
+            </p>
+            <p className="text-neutral-700 mb-6 leading-relaxed">
+              While other apps have started to acknowledge the menstrual cycle, they treat it as a standalone silo—a tab for &quot;cycle insights.&quot; BloomFlow&apos;s breakthrough is different: we treat the cycle as the <strong className="text-primary-700">central operating system for your entire life</strong>.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="flex items-start gap-3 p-4 rounded-lg bg-primary-50 border border-primary-200">
+                <Zap className="w-6 h-6 text-primary-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-primary-800 mb-1">Cycle → workout impact</p>
+                  <p className="text-sm text-neutral-700">
+                    We track how your menstrual cycle impacts your workouts—energy, recovery, and performance across your phases—so you can train at the right times and intensity for your body.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-4 rounded-lg bg-secondary-50 border border-secondary-200">
+                <Shield className="w-6 h-6 text-secondary-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-secondary-800 mb-1">Enterprise-grade observability</p>
+                  <p className="text-sm text-neutral-700">
+                    Opik powers continuous refinement of our model—so recommendations get smarter and more evidence-based over time.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-4 rounded-lg bg-primary-50 border border-primary-200">
+                <Cpu className="w-6 h-6 text-primary-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-primary-800 mb-1">Closed-loop, adaptive system</p>
+                  <p className="text-sm text-neutral-700">
+                    We&apos;re building the closed-loop, evidence-based adaptive system that current apps are still working toward.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <p className="text-neutral-600 text-sm italic">
+              One system. Your cycle at the center. We track how it impacts your workouts so you can train smarter and stay consistent.
+            </p>
+          </section>
+
           {/* What We Track */}
           <section className="bg-white rounded-xl shadow-soft-lg p-6 border-2 border-primary-200">
             <div className="flex items-center gap-3 mb-4">
