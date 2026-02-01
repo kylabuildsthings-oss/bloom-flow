@@ -38,9 +38,9 @@ export default function HelpPage() {
                 </p>
               </div>
               <div className="p-4 bg-primary-50 rounded-lg">
-                <h3 className="font-bold text-neutral-800 mb-2">How does the cycle prediction work?</h3>
+                <h3 className="font-bold text-neutral-800 mb-2">How does workout prediction work?</h3>
                 <p className="text-neutral-600">
-                  Our AI analyzes your cycle history and health patterns to predict your next period and fertile windows. The more data you log, the more accurate predictions become.
+                  BloomFlow uses your cycle phase together with your sleep, nutrition, movement, and stress levels to suggest when you’re likely to have the most energy and recover best—so you can plan workouts at the most optimal times for your body.
                 </p>
               </div>
               <div className="p-4 bg-primary-50 rounded-lg">
@@ -58,19 +58,55 @@ export default function HelpPage() {
               <Book className="w-6 h-6 text-primary-600" />
               <h2 className="text-2xl font-bold text-primary-700">How-To Guides</h2>
             </div>
-            <div className="space-y-3">
-              <Link href="/garden" className="block p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
-                <h3 className="font-bold text-neutral-800 mb-1">Getting Started with Body Garden</h3>
-                <p className="text-sm text-neutral-600">Learn how to track your health metrics and grow your garden</p>
-              </Link>
-              <Link href="/cottage" className="block p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
-                <h3 className="font-bold text-neutral-800 mb-1">Understanding Coin Cottage</h3>
-                <p className="text-sm text-neutral-600">Discover how to earn rewards and track your progress</p>
-              </Link>
-              <Link href="/factory" className="block p-4 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
-                <h3 className="font-bold text-neutral-800 mb-1">Using Focus Factory</h3>
-                <p className="text-sm text-neutral-600">Explore AI-powered insights and productivity tracking</p>
-              </Link>
+            <p className="text-neutral-600 mb-5">
+              BloomFlow uses your cycle phase alongside sleep, nutrition, movement, and stress to help you plan the best times for workouts—and rewards you for logging this data. The app is built around three main tabs. Here’s what each one does and how to get the most out of your experience.
+            </p>
+            <div className="space-y-5">
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <h3 className="font-bold text-neutral-800 mb-2">Body Garden</h3>
+                <p className="text-neutral-600 text-sm mb-2">
+                  <strong>What it is:</strong> Your daily logging hub. Here you log sleep, nutrition, movement, stress, and energy so BloomFlow can use this data—together with your cycle phase—to suggest the best times for workouts. Logging here also earns you rewards in the app.
+                </p>
+                <p className="text-neutral-600 text-sm mb-2">
+                  <strong>What you’ll find:</strong> A calendar with cycle-phase colors, daily check-ins (tap a date to answer the day’s questions), your garden level and habit streak, and optional Streak Protection (Greenhouse Mode) to protect your streak on low-energy days.
+                </p>
+                <p className="text-neutral-600 text-sm mb-3">
+                  <strong>Tip:</strong> Log sleep, nutrition, movement, and stress regularly so the app can plan workouts around your best times and you keep earning rewards.
+                </p>
+                <Link href="/garden" className="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                  Open Body Garden →
+                </Link>
+              </div>
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <h3 className="font-bold text-neutral-800 mb-2">Coin Cottage</h3>
+                <p className="text-neutral-600 text-sm mb-2">
+                  <strong>What it is:</strong> Your rewards and planning center. BloomFlow rewards you with coins for logging sleep, nutrition, movement, stress, and cycle data in the Body Garden—you’ll see your balance here. You can also add accountability buddies and browse workout plans that use your cycle phase plus that logged data to suggest the best times and types of workouts.
+                </p>
+                <p className="text-neutral-600 text-sm mb-2">
+                  <strong>What you’ll find:</strong> Your coin balance and how the point system works (earned by logging data), a buddy list for accountability, and general plus tailored workout plans based on your cycle and logged health data.
+                </p>
+                <p className="text-neutral-600 text-sm mb-3">
+                  <strong>Tip:</strong> The more you log in Body Garden, the more coins you earn and the better your tailored plans. Use plans that match your suggested best times; spend coins in Focus Factory for fun, focused sessions.
+                </p>
+                <Link href="/cottage" className="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                  Open Coin Cottage →
+                </Link>
+              </div>
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <h3 className="font-bold text-neutral-800 mb-2">Focus Factory</h3>
+                <p className="text-neutral-600 text-sm mb-2">
+                  <strong>What it is:</strong> Timed focus games to use during your workouts. The Focus Factory offers timed games you can unlock or enhance with coins—the same coins you earn by logging sleep, nutrition, movement, stress, and cycle data in the app. Play them while you work out to help you stay focused on your workout goals.
+                </p>
+                <p className="text-neutral-600 text-sm mb-2">
+                  <strong>What you’ll find:</strong> Timed games designed to be played during workouts, helping you concentrate on your session and hit your goals. Spend the coins you’ve earned from logging your data in Body Garden to unlock and get the most out of the experience.
+                </p>
+                <p className="text-neutral-600 text-sm mb-3">
+                  <strong>Tip:</strong> Use focus games during your best workout times (based on your logged data and cycle). Try longer timed games when your energy is high and shorter ones when you want a gentler, more focused session.
+                </p>
+                <Link href="/factory" className="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                  Open Focus Factory →
+                </Link>
+              </div>
             </div>
           </section>
 
