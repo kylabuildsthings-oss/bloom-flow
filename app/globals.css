@@ -163,3 +163,9 @@ body {
     transform: scale(1.05);
   }
 }
+
+/* Pulse River - water flow */
+@keyframes pulseRiverFlow {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(32px); }
+}

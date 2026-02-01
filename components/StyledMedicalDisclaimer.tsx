@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X, Scroll, Shield } from 'lucide-react';
 import { useOpik } from '@/lib/opik';
+import { useMedicalDisclaimer } from '@/components/MedicalDisclaimer';
 
 const BANNER_DISMISSED_KEY = 'bloomflow_disclaimer_banner_dismissed';
 
@@ -33,12 +34,16 @@ export function StyledMedicalDisclaimer({
   emergencyResources,
 }: StyledMedicalDisclaimerProps) {
   const opik = useOpik();
-  const [bannerDismissed, setBannerDismissed] = useState(true); // start true to avoid flash, then sync from localStorage
+  const { showDisclaimer } = useMedicalDisclaimer();
+  // When modal is closed (isVisible false), show the banner so "Not medical advice" is visible
+  const [bannerDismissed, setBannerDismissed] = useState(() => isVisible);
 
+  // When modal closes, show the banner again so a disclaimer is always visible
   useEffect(() => {
-    const stored = localStorage.getItem(BANNER_DISMISSED_KEY);
-    setBannerDismissed(stored === 'true');
-  }, []);
+    if (!isVisible) {
+      setBannerDismissed(false);
+    }
+  }, [isVisible]);
 
   const dismissBanner = () => {
     setBannerDismissed(true);
@@ -54,7 +59,7 @@ export function StyledMedicalDisclaimer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 // Don't allow closing by clicking backdrop - must acknowledge
@@ -187,7 +192,7 @@ export function StyledMedicalDisclaimer({
             animate={{ y: 0 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed bottom-0 left-0 right-0 z-[150] pointer-events-none"
+            className="fixed bottom-0 left-0 right-0 z-[9998] pointer-events-none"
           >
             <div className="container mx-auto px-4 pb-4">
               <motion.div
@@ -198,7 +203,14 @@ export function StyledMedicalDisclaimer({
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <Scroll className="w-6 h-6 text-stone-700 shrink-0" />
                     <p className="text-sm font-semibold text-stone-800">
-                      <strong className="text-red-600">Not medical advice.</strong> Consult your healthcare provider for medical concerns.
+                      <strong className="text-red-600">Not medical advice.</strong> Consult your healthcare provider for medical concerns.{' '}
+                      <button
+                        type="button"
+                        onClick={showDisclaimer}
+                        className="underline text-primary-600 hover:text-primary-700 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 rounded"
+                      >
+                        View full disclaimer
+                      </button>
                     </p>
                   </div>
                   <button

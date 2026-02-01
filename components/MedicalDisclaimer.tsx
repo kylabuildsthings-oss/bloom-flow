@@ -13,16 +13,18 @@ interface MedicalDisclaimerContextType {
 const MedicalDisclaimerContext = createContext<MedicalDisclaimerContextType | null>(null);
 
 export function MedicalDisclaimerProvider({ children }: { children: ReactNode }) {
-  const [isVisible, setIsVisible] = useState(true);
+  // Start false so returning users can click buttons; effect shows modal only for first-time users
+  const [isVisible, setIsVisible] = useState(false);
   const [redFlags, setRedFlags] = useState<ReturnType<typeof detectRedFlags>>([]);
   const [emergencyResources, setEmergencyResources] = useState<ReturnType<typeof getEmergencyResources> | null>(null);
   const opik = useOpik();
 
   useEffect(() => {
-    // Show disclaimer on first load
     const hasSeenDisclaimer = localStorage.getItem('bloomflow_disclaimer_seen');
-    if (!hasSeenDisclaimer) {
-      setIsVisible(true);
+    if (hasSeenDisclaimer) {
+      setIsVisible(false); // returning user: keep modal closed so buttons work
+    } else {
+      setIsVisible(true);  // first-time user: show popup so they see the disclaimer
     }
   }, []);
 

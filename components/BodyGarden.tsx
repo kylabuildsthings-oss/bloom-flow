@@ -84,53 +84,60 @@ export function BodyGarden() {
 
   const loadGarden = async () => {
     setIsLoading(true);
+    try {
+      // Load garden state (never throws; returns demo state on failure)
+      let state = await GameStorage.loadGardenState();
+      if (!state) {
+        state = GameStorage.getDemoGardenState();
+      }
 
-    // Load garden state
-    const state = await GameStorage.loadGardenState();
-    if (!state) {
+      // Update plants (daily maintenance)
+      const updatedPlants = GameEngine.updateAllPlants(state.plants, state.greenhouseMode);
+
+      // Check greenhouse mode
+      let greenhouseMode = state.greenhouseMode;
+      if (state.greenhouseUntil && new Date() > state.greenhouseUntil) {
+        greenhouseMode = false;
+      }
+
+      // Get current cycle phase
+      try {
+        const cycleData = await HealthDataStorage.getSensitive('cycle_data');
+        if (cycleData && cycleData.length > 0) {
+          const cycleHistory = cycleData.map((d: any) => ({
+            periodStart: new Date(d.date),
+            symptoms: [],
+            date: new Date(d.date),
+          }));
+          const today = new Date();
+          const phaseProbs = CycleEngine.predictPhase(cycleHistory, today);
+          const topPhase = phaseProbs.reduce((max, p) =>
+            p.probability > max.probability ? p : max
+          );
+          setCurrentPhase(topPhase.phase);
+        }
+      } catch (_) {
+        // Cycle phase is optional; garden still shows
+      }
+
+      const updatedState: GardenState = {
+        ...state,
+        plants: updatedPlants,
+        greenhouseMode,
+        lastUpdated: new Date(),
+      };
+
+      setGardenState(updatedState);
+
+      OpikEngagement.trackEvent({
+        type: 'garden_view',
+        timestamp: new Date(),
+      }, opik);
+    } catch (_) {
+      setGardenState(GameStorage.getDemoGardenState());
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    // Update plants (daily maintenance)
-    const updatedPlants = GameEngine.updateAllPlants(state.plants, state.greenhouseMode);
-    
-    // Check greenhouse mode
-    let greenhouseMode = state.greenhouseMode;
-    if (state.greenhouseUntil && new Date() > state.greenhouseUntil) {
-      greenhouseMode = false;
-    }
-
-    // Get current cycle phase
-    const cycleData = await HealthDataStorage.getSensitive('cycle_data');
-    if (cycleData && cycleData.length > 0) {
-      const cycleHistory = cycleData.map((d: any) => ({
-        periodStart: new Date(d.date),
-        symptoms: [],
-        date: new Date(d.date),
-      }));
-      const today = new Date();
-      const phaseProbs = CycleEngine.predictPhase(cycleHistory, today);
-      const topPhase = phaseProbs.reduce((max, p) => 
-        p.probability > max.probability ? p : max
-      );
-      setCurrentPhase(topPhase.phase);
-    }
-
-    const updatedState: GardenState = {
-      ...state,
-      plants: updatedPlants,
-      greenhouseMode,
-      lastUpdated: new Date(),
-    };
-
-    setGardenState(updatedState);
-    setIsLoading(false);
-
-    OpikEngagement.trackEvent({
-      type: 'garden_view',
-      timestamp: new Date(),
-    }, opik);
   };
 
   const logActivity = async (

@@ -18,6 +18,7 @@ import { CycleEngine, CyclePhase } from '@/lib/cycle-engine';
 import { HealthDataStorage } from '@/lib/storage';
 
 const DAILY_QUESTIONNAIRE_KEY = 'bloomflow_daily_questionnaire';
+const DEMO_CALENDAR_SEEDED_KEY = 'bloomflow_demo_calendar_seeded';
 
 export interface DailyQuestionnaireEntry {
   sleepQuality: number;
@@ -62,6 +63,32 @@ function saveEntry(dateKey: string, entry: DailyQuestionnaireEntry): void {
   localStorage.setItem(DAILY_QUESTIONNAIRE_KEY, JSON.stringify(entries));
 }
 
+function seedDemoCalendarEntries(): void {
+  if (typeof window === 'undefined') return;
+  if (localStorage.getItem(DEMO_CALENDAR_SEEDED_KEY) === 'true') return;
+  const entries = getEntries();
+  if (Object.keys(entries).length > 0) return;
+
+  const now = new Date();
+  const movementOpts: DailyQuestionnaireEntry['movement'][] = ['yes', 'yes', 'no', 'yes'];
+  const nutritionOpts: DailyQuestionnaireEntry['nutrition'][] = ['good', 'okay', 'good', 'good'];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = format(d, 'yyyy-MM-dd');
+    const entry: DailyQuestionnaireEntry = {
+      sleepQuality: 3 + (i % 3),
+      energyLevel: 3 + (i % 3),
+      movement: movementOpts[i % 4],
+      nutrition: nutritionOpts[i % 4],
+      stressLevel: 3 + (i % 2),
+      submittedAt: d.toISOString(),
+    };
+    saveEntry(key, entry);
+  }
+  localStorage.setItem(DEMO_CALENDAR_SEEDED_KEY, 'true');
+}
+
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export function GardenCalendar() {
@@ -87,6 +114,7 @@ export function GardenCalendar() {
   }, []);
 
   useEffect(() => {
+    seedDemoCalendarEntries();
     setEntries(getEntries());
   }, [modalOpen]); // Refresh entries when modal closes
 
