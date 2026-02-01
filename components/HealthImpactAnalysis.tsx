@@ -1,17 +1,69 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TrendingUp, BarChart, Calendar, Activity } from 'lucide-react';
+import { TrendingUp, Calendar, Activity, BookOpen, BarChart3 } from 'lucide-react';
 import { HealthImpact, ImpactAnalysis, HealthTrend } from '@/lib/health-impact';
 import { HealthDataStorage } from '@/lib/storage';
 import { useOpik } from '@/lib/opik';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, subDays } from 'date-fns';
 
+type ViewMode = 'simple' | 'full';
+
+function metricLabel(metric: string): string {
+  const labels: Record<string, string> = {
+    sleepQuality: 'Sleep quality',
+    energyLevel: 'Energy',
+    mood: 'Mood',
+    stress: 'Stress',
+    symptomCount: 'Symptoms',
+    symptomSeverity: 'Symptom severity',
+  };
+  return labels[metric] || metric.replace(/([A-Z])/g, ' $1').trim();
+}
+
+function buildPlainLanguageSummary(analysis: ImpactAnalysis): { headline: string; bullets: string[] } {
+  const { overallImprovement, trends, phaseBreakdown } = analysis;
+  const headline =
+    overallImprovement > 0
+      ? `Your health impact over this period is a **${overallImprovement.toFixed(0)}% improvement** overall.`
+      : overallImprovement < 0
+        ? `Over this period, your overall health impact is **${overallImprovement.toFixed(0)}%**.`
+        : `Over this period, your health is **holding steady**.`;
+
+  const bullets: string[] = [];
+  const improving = trends.filter((t) => t.trend === 'improving');
+  const declining = trends.filter((t) => t.trend === 'declining');
+  if (improving.length > 0) {
+    const names = improving.map((t) => metricLabel(t.metric)).join(' and ');
+    bullets.push(`${names} ${improving.length === 1 ? 'is' : 'are'} trending up—that\'s a good sign.`);
+  }
+  if (declining.length > 0) {
+    const names = declining.map((t) => metricLabel(t.metric)).join(' and ');
+    const note =
+      declining.some((t) => t.metric === 'stress' || t.metric === 'symptomSeverity')
+        ? ' (lower is better for stress and symptoms)'
+        : '';
+    bullets.push(`${names} ${declining.length === 1 ? 'is' : 'are'} trending down${note}.`);
+  }
+  if (improving.length === 0 && declining.length === 0 && trends.length > 0) {
+    bullets.push('Your main metrics are holding steady—consistency is progress.');
+  }
+  const phaseEntries = Object.entries(phaseBreakdown).filter(([, d]) => d.interventions > 0);
+  if (phaseEntries.length > 0) {
+    const best = phaseEntries.reduce((a, b) => (a[1].improvement >= b[1].improvement ? a : b));
+    const phaseName = best[0].charAt(0).toUpperCase() + best[0].slice(1);
+    bullets.push(`Recommendations during your **${phaseName}** phase showed the strongest improvement.`);
+  }
+  if (bullets.length === 0) bullets.push('Keep logging—more data will make your summary more personal.');
+  return { headline, bullets };
+}
+
 export function HealthImpactAnalysis() {
   const [analysis, setAnalysis] = useState<ImpactAnalysis | null>(null);
   const [correlation, setCorrelation] = useState<{ correlation: number; lagDays: number; effectiveness: number } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<ViewMode>('simple');
   const opik = useOpik();
 
   useEffect(() => {
@@ -112,11 +164,39 @@ export function HealthImpactAnalysis() {
     );
   }
 
+  const plainSummary = buildPlainLanguageSummary(analysis);
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 border border-neutral-200">
-      <div className="flex items-center gap-3 mb-6">
-        <TrendingUp className="text-primary-600 w-6 h-6" />
-        <h2 className="text-2xl font-bold text-primary-700">Longitudinal Health Impact Analysis</h2>
+      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <div className="flex items-center gap-3">
+          <TrendingUp className="text-primary-600 w-6 h-6" />
+          <h2 className="text-2xl font-bold text-primary-700">Longitudinal Health Impact Analysis</h2>
+        </div>
+        <div className="flex rounded-lg border border-neutral-200 p-0.5 bg-neutral-50">
+          <button
+            type="button"
+            onClick={() => setViewMode('simple')}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              viewMode === 'simple' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-800'
+            }`}
+            aria-pressed={viewMode === 'simple'}
+          >
+            <BookOpen className="w-4 h-4" />
+            Simple summary
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('full')}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              viewMode === 'full' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-neutral-800'
+            }`}
+            aria-pressed={viewMode === 'full'}
+          >
+            <BarChart3 className="w-4 h-4" />
+            Full analysis
+          </button>
+        </div>
       </div>
 
       {/* Overall Improvement */}
@@ -135,6 +215,30 @@ export function HealthImpactAnalysis() {
         </div>
       </div>
 
+      {/* What this means for you - plain language (always shown, prominent in simple view) */}
+      <div className={`mb-6 p-4 rounded-lg border-2 border-primary-200 bg-primary-50/50 ${viewMode === 'simple' ? '' : 'border-dashed'}`}>
+        <h3 className="font-semibold text-primary-800 mb-3 flex items-center gap-2">
+          <BookOpen className="w-5 h-5 text-primary-600" />
+          What this means for you
+        </h3>
+        <p className="text-neutral-800 mb-3">
+          {plainSummary.headline.replace(/\*\*(.*?)\*\*/g, '$1')}
+        </p>
+        <ul className="space-y-2 text-neutral-700 text-sm list-disc list-inside">
+          {plainSummary.bullets.map((bullet, i) => (
+            <li key={i}>{bullet.replace(/\*\*(.*?)\*\*/g, '$1')}</li>
+          ))}
+        </ul>
+      </div>
+
+      {viewMode === 'simple' && (
+        <p className="text-sm text-neutral-500 mb-4">
+          Switch to <strong>Full analysis</strong> above to see trend graphs and detailed metrics.
+        </p>
+      )}
+
+      {viewMode === 'full' && (
+        <>
       {/* Correlation with AI Interventions */}
       {correlation && (
         <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
@@ -253,6 +357,8 @@ export function HealthImpactAnalysis() {
           timing via Opik traces, enabling precise measurement of AI effectiveness.
         </p>
       </div>
+        </>
+      )}
     </div>
   );
 }
