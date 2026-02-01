@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Settings, User, Shield, Bell, Database, Eye, EyeOff, Lock } from 'lucide-react';
+import { Settings, User, Shield, Bell, Database, Eye, EyeOff, Lock, Info } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
   const [showAdminLink, setShowAdminLink] = useState(false);
   const [adminClickCount, setAdminClickCount] = useState(0);
+  const [showExportInfo, setShowExportInfo] = useState(false);
 
   const handleAdminClick = () => {
     const newCount = adminClickCount + 1;
@@ -119,8 +120,8 @@ export default function ProfilePage() {
               </div>
               <div className="flex items-center justify-between p-4 bg-primary-50 rounded-lg">
                 <div>
-                  <p className="font-semibold text-neutral-800">Cycle Predictions</p>
-                  <p className="text-sm text-neutral-600">Notifications about cycle predictions</p>
+                  <p className="font-semibold text-neutral-800">Workout Predictions</p>
+                  <p className="text-sm text-neutral-600">Notifications about workout predictions</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" className="sr-only peer" defaultChecked />
@@ -140,7 +141,6 @@ export default function ProfilePage() {
               <div className="p-4 bg-primary-50 rounded-lg">
                 <p className="font-semibold text-neutral-800 mb-2">Theme</p>
                 <select className="w-full px-4 py-2 border-2 border-neutral-300 rounded-lg focus:border-primary-500 focus:outline-none">
-                  <option>Game-Inspired (Default)</option>
                   <option>Light</option>
                   <option>Dark</option>
                 </select>
@@ -154,7 +154,29 @@ export default function ProfilePage() {
                 </select>
               </div>
               <div className="p-4 bg-primary-50 rounded-lg">
-                <p className="font-semibold text-neutral-800 mb-2">Data Export</p>
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="font-semibold text-neutral-800">Data Export</p>
+                  <div className="relative shrink-0">
+                    <button
+                      type="button"
+                      aria-label="Why export data?"
+                      onClick={() => setShowExportInfo((v) => !v)}
+                      onBlur={() => setShowExportInfo(false)}
+                      className="p-1 rounded-full text-neutral-500 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-400"
+                      title="Export your data to see how your health affects your motivation and to build better workout plans."
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                    {showExportInfo && (
+                      <div
+                        className="absolute left-0 top-full mt-1 z-10 w-64 p-3 text-xs text-neutral-700 bg-white border border-neutral-200 rounded-lg shadow-lg"
+                        role="tooltip"
+                      >
+                        Export your data for a clearer view of how your health affects your motivation to work out, and to build better workout plans.
+                      </div>
+                    )}
+                  </div>
+                </div>
                 <button className="w-full px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors">
                   Export My Data
                 </button>

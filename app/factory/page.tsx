@@ -1,10 +1,8 @@
 'use client';
 
 import { FocusFactory } from '@/components/FocusFactory';
-import { AIEvaluationDashboard } from '@/components/AIEvaluationDashboard';
 import { ABTestingDashboard } from '@/components/ABTestingDashboard';
 import { AIReasoningChain } from '@/components/AIReasoningChain';
-import { SafetyComplianceDashboard } from '@/components/SafetyComplianceDashboard';
 
 export default function FactoryPage() {
   return (
@@ -23,13 +21,9 @@ export default function FactoryPage() {
         <div className="space-y-8">
           <FocusFactory />
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AIEvaluationDashboard />
-            <ABTestingDashboard />
-          </div>
+          <ABTestingDashboard />
           
           <AIReasoningChain />
-          <SafetyComplianceDashboard />
         </div>
       </div>
     </main>
