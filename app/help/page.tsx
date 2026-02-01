@@ -1,6 +1,6 @@
 'use client';
 
-import { HelpCircle, Book, Mail, MessageCircle, FileText } from 'lucide-react';
+import { HelpCircle, Book, Mail, MessageCircle, FileText, FlaskConical } from 'lucide-react';
 import Link from 'next/link';
 
 export default function HelpPage() {
@@ -106,6 +106,40 @@ export default function HelpPage() {
                 <Link href="/factory" className="text-primary-600 hover:text-primary-700 font-medium text-sm">
                   Open Focus Factory →
                 </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* A/B Testing Framework */}
+          <section className="bg-white rounded-xl shadow-soft-lg p-6 border-2 border-primary-200">
+            <div className="flex items-center gap-3 mb-4">
+              <FlaskConical className="w-6 h-6 text-primary-600" />
+              <h2 className="text-2xl font-bold text-primary-700">A/B Testing Framework</h2>
+            </div>
+            <p className="text-neutral-600 mb-4">
+              BloomFlow uses an A/B testing framework powered by Opik to systematically test what works best for motivating workouts across different cycle phases. Our goal is to improve workout adherence and positive fitness outcomes by testing variables in the experience—so the app gets better for you over time.
+            </p>
+            <p className="text-neutral-600 text-sm mb-5">
+              You may see different wording, rewards, or workout suggestions as we run these tests. All variants are designed to support your goals; we measure which ones lead to the best outcomes and use that to improve BloomFlow for everyone.
+            </p>
+            <div className="space-y-4">
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <h3 className="font-bold text-neutral-800 mb-2">Track 1: Motivational Messaging by Cycle Phase</h3>
+                <p className="text-neutral-600 text-sm mb-2">
+                  We test whether phase-aligned messaging improves adherence. For example: energetic, “crush it” style messages during follicular/ovulation vs. nurturing, recovery-focused messages during luteal/menstrual. Success is measured by workout completion rate for the suggested activity.
+                </p>
+              </div>
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <h3 className="font-bold text-neutral-800 mb-2">Track 2: Gamification Rewards</h3>
+                <p className="text-neutral-600 text-sm mb-2">
+                  We test which reward type best sustains engagement: instant rewards (e.g. adding a piece to a machine), currency (e.g. energy orbs for games), or visual progress (e.g. garden growth). Success is measured by 7-day retention and weekly workout frequency.
+                </p>
+              </div>
+              <div className="p-4 bg-primary-50 rounded-lg border border-primary-100">
+                <h3 className="font-bold text-neutral-800 mb-2">Track 3: Workout Recommendations</h3>
+                <p className="text-neutral-600 text-sm mb-2">
+                  We test whether the AI should stick strictly to cycle-optimal workout types or blend cycle phase with your historically most-enjoyed activities. Success is measured by your rating of “How did this workout feel?” and next-day workout completion.
+                </p>
               </div>
             </div>
           </section>
